@@ -23,8 +23,7 @@ if(!file.exists(DaTZipfile)) {
 #  Reads data from the working directory
 NEI <- readRDS("summarySCC_PM25.rds")
 
-# Extra only motor vehicle sources (type=ON-ROAD) data for Baltimore City, Maryland (fips == "24510")
-
+# Extract only data from motor vehicle sources (type=ON-ROAD) in Baltimore City, Maryland (fips == "24510")
 emissions.BaltimoreMotor <- subset(NEI,fips == "24510" & type == "ON-ROAD")
 tol.BaltimoreMotor <- aggregate(Emissions ~ year, emissions.BaltimoreMotor, sum)
 

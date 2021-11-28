@@ -42,3 +42,4 @@ barplot((tol.emissions$Emissions)/10^3 , names = tol.emissions$year
         , main = "Total PM2.5 Emissions in United States Over the Years")
 
 dev.off()
+

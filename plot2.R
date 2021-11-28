@@ -23,7 +23,7 @@ if(!file.exists(DaTZipfile)) {
 #  Reads data from the working directory
 NEI <- readRDS("summarySCC_PM25.rds")
 
-# Extra data only for Baltimore City, Maryland (fips == "24510")
+# Extract data only for Baltimore City, Maryland (fips == "24510")
 emissions.Baltimore <- subset(NEI,fips == "24510")
 tol.emissions.Baltimore <- aggregate(Emissions ~ year, emissions.Baltimore, sum)
 
