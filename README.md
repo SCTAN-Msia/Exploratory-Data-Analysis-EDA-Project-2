@@ -1,4 +1,4 @@
-# Exploratory-Data-Analysis-EDA-Project-2
+# Exploratory-Data-Analysis-EDA-Project-2 - Instructions
 Exploratory Data Analysis Peer-graded Assignment Course Project 2
 
 ## Introduction
@@ -16,14 +16,6 @@ The data for this assignment are available from the course web site as a single 
 The zip file contains two files:
 1. PM2.5 Emissions Data (summarySCC_PM25.rds): This file contains a data frame with all of the PM2.5 emissions data for 1999, 2002, 2005, and 2008. For each year, the table contains number of tons of PM2.5 emitted from a specific type of source for the entire year. 
 
-######     fips      SCC Pollutant Emissions  type year
-###### 4  09001 10100401  PM25-PRI    15.714 POINT 1999
-###### 8  09001 10100404  PM25-PRI   234.178 POINT 1999
-###### 12 09001 10100501  PM25-PRI     0.128 POINT 1999
-###### 16 09001 10200401  PM25-PRI     2.036 POINT 1999
-###### 20 09001 10200504  PM25-PRI     0.388 POINT 1999
-###### 24 09001 10200602  PM25-PRI     1.490 POINT 1999
-
 fips      : A five-digit number (represented as a string) indicating the U.S. county
 SCC       : The name of the source as indicated by a digit string (see source code classification table)
 Pollutant : A string indicating the pollutant
@@ -40,11 +32,10 @@ SCC <- readRDS("Source_Classification_Code.rds")
 
 as long as each of those files is in your current working directory (check by calling dir() and see if those files are in the listing).
 
-Assignment
-less 
+## Assignment
 The overall goal of this assignment is to explore the National Emissions Inventory database and see what it say about fine particulate matter pollution in the United states over the 10-year period 1999–2008. You may use any R package you want to support your analysis.
 
-Questions
+## Questions
 You must address the following questions and tasks in your exploratory analysis. For each question/task you will need to make a single plot. Unless specified, you can use any plotting system in R to make your plot.
 
 Have total emissions from PM2.5 decreased in the United States from 1999 to 2008? Using the base plotting system, make a plot showing the total PM2.5 emission from all sources for each of the years 1999, 2002, 2005, and 2008.
@@ -59,7 +50,7 @@ How have emissions from motor vehicle sources changed from 1999–2008 in Baltim
 
 Compare emissions from motor vehicle sources in Baltimore City with emissions from motor vehicle sources in Los Angeles County, California (\color{red}{\verb|fips == "06037"|}fips == "06037"). Which city has seen greater changes over time in motor vehicle emissions?
 
-Making and Submitting Plots
+## Making and Submitting Plots
 less 
 For each plot you should
 
