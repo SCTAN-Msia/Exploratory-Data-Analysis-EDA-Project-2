@@ -2,39 +2,261 @@
 title: "Summary output for EDA Project2"
 author: "Tan Siu Ching"
 date: "11/28/2021"
-output: pdf_document
+output:
+  pdf_document: default
+  word_document: default
+  md_document: default
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 ## Output Summary for EDA Project 2 
 
 This is summary report about my output and answers to the questions for my EDA Project 2.  
 The R code to the construction of the plot for Analysis are as follow:
 
-### Questions 1
+## Questions 1
 Have total emissions from PM2.5 decreased in the United States from 1999 to 2008? Using the base plotting system, make a plot showing the total PM2.5 emission from all sources for each of the years 1999, 2002, 2005, and 2008.
 
-
-Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```
-setwd("C:/Users/small/Documents/R_GitHub/EDA/Exploratory-Data-Analysis-EDA-Project-2")
+```{r plot1A, include=FALSE}
 library(dplyr)
+
+# Download data from Course Web site & Unzip data zipped file
 Data_url <- "https://d396qusza40orc.cloudfront.net/exdata%2Fdata%2FNEI_data.zip" 
 DaTZipfile <- "exdata_data_NEI_data.zip"
+
+if(!file.exists(DaTZipfile)) {
+download.file(Data_url, 
+destfile = DaTZipfile, 
+method = "curl")
+unzip(zipfile = "exdata_data_NEI_data.zip", list = FALSE, exdir = ".")
+}
+
+#  Reads data from the working directory
+NEI <- readRDS("summarySCC_PM25.rds")
+SCC <- readRDS("Source_Classification_Code.rds")
+
+# Compute the aggregate values
+tol.emissions <- aggregate(Emissions ~ year, NEI, sum)
+# Active graphics device
+dev.cur()
+
+## Assigned plot 
+png("plot1.png")
+
+barplot((tol.emissions$Emissions)/10^3 , names = tol.emissions$year,
+xlab = "Years", ylab = "PM2.5 Emissions (in 10 KiloTons)",
+main = "Total PM2.5 Emissions in United States Over the Years")
+
+dev.off()
+```
+### Plot 1
+```{r plot1B, echo=FALSE}
+# Active graphics device
+
+barplot((tol.emissions$Emissions)/10^3 , names = tol.emissions$year,
+xlab = "Years", ylab = "PM2.5 Emissions (in 10 KiloTons)",
+main = "Total PM2.5 Emissions in United States Over the Years")
+
 ```
 
-## Including Plots
+### Analysis Statement for Q1
+The barplot reverted that the total PM~2.5~ emissions in the US has decreased from 1999 to 2008.
 
-You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+## Questions 2
+Have total emissions from PM2.5 decreased in the Baltimore City, Maryland (fips == "24510") from 1999 to 2008? Use the base plotting system to make a plot answering this question.
+
+```{r plot2A, include=FALSE}
+# Cont's from Q1
+# Extract data only for Baltimore City, Maryland (fips == "24510")
+emissions.Baltimore <- subset(NEI,fips == "24510")
+tol.emissions.Baltimore <- aggregate(Emissions ~ year, emissions.Baltimore, sum)
+
+dev.cur()
+png('plot2.png')
+
+barplot((tol.emissions.Baltimore$Emissions)
+        , names= tol.emissions.Baltimore$year
+        , xlab = "Years", ylab = "PM2.5 Emissions (Tons)"
+        , main = "Total PM2.5 Emissions in Baltimore City, Maryland Over the Years")
+
+dev.off()
+```
+### Plot 2
+```{r plot2B, echo=FALSE}
+barplot((tol.emissions.Baltimore$Emissions)
+        , names= tol.emissions.Baltimore$year
+        , xlab = "Years", ylab = "PM2.5 Emissions (Tons)"
+        , main = "Total PM2.5 Emissions in Baltimore City, Maryland Over the Years")
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+### Analysis Statement for Q2
+In overall, the barplot reverted that the total PM~2.5~ in Baltimore City, MD has decreased from year 1999 to 2008. It experience a dropped in year 2002, but then going up again in year 2005 and then another huge dropped in year 2008.
+
+
+## Questions 3
+Of the four types of sources indicated by the type (point, nonpoint, onroad, nonroad) variable, which of these four sources have seen decreases in emissions from 1999–2008 for Baltimore City? Which have seen increases in emissions from 1999–2008? Use the ggplot2 plotting system to make a plot answer this question.
+
+```{r plot3A, include=FALSE}
+
+# Extra data only for Baltimore City, Maryland (fips == "24510")
+emissions.Baltimore <- subset(NEI,fips == "24510")
+
+# GGPlot for data Baltimore City, Maryland by Year vs Type of Source
+library(ggplot2)
+dev.cur()
+png('plot3.png')
+
+ggpBaltimore <- ggplot(emissions.Baltimore, aes(factor(year),Emissions, fill=type)) +
+  geom_bar(stat="identity") + theme_bw() + guides(fill=FALSE)+
+  facet_grid(.~type) + 
+  labs(x="Year", y=expression("PM"[2.5]*" Emission (Tons)"))+ 
+  labs(title=expression("PM"[2.5]*" Emissions in Baltimore City, Maryland Breakdown by Type of Sources"))
+
+print(ggpBaltimore)
+dev.off()
+```
+### Plot 3
+```{r plot3B, echo=FALSE}
+library(ggplot2)
+ggpBaltimore <- ggplot(emissions.Baltimore, aes(factor(year),Emissions, fill=type)) +
+  geom_bar(stat="identity") + theme_bw() + guides(fill=FALSE)+
+  facet_grid(.~type) + 
+  labs(x="Year", y=expression("PM"[2.5]*" Emission (Tons)"))+ 
+  labs(title=expression("PM"[2.5]*" Emissions in Baltimore City, Maryland Breakdown by Type of Sources"))
+print(ggpBaltimore)
+
+```
+
+### Analysis Statement for Q3
+The source types NON-ROAD, NONPOINT, ON-ROAD have all show a significant decreases in emissions from 1999–2008 for Baltimore City, Maryland.However, the source type POINT show a very significant difference tren compared to other type of sources. It keep on increasing the in first 3 cycles, from year 1999 to 2005, it then experience a huge dropped in 2008.
+
+
+## Questions 4 
+Across the United States, how have emissions from coal combustion-related sources changed from 1999–2008?
+
+```{r plot4A, include=FALSE}
+# Cont's from Q3
+#  Reads data from the working directory
+NEI <- readRDS("summarySCC_PM25.rds")
+SCC <- readRDS("Source_Classification_Code.rds")
+
+# Extra only coal combustion-related sources data for all US
+
+combustionRelated <- grepl("comb", SCC$SCC.Level.One, ignore.case=TRUE) # to form TrueFalse index for SCC combustion related data
+coalRelated <- grepl("coal", SCC$SCC.Level.Four, ignore.case=TRUE) # to form TrueFalse index for SCC coal related data
+coalCombustion <- (combustionRelated & coalRelated) # to form TrueFalse index for data with: combustion & coal = TRUE
+combustionSCC <- SCC[coalCombustion,]$SCC   # to select SCC data that combustion & coal = TRUE
+combustionNEI <- NEI[NEI$SCC %in% combustionSCC,] # to merge & Select NEI & SCC data that combustion & coal = TRUE
+
+tol.combustionNEI <- aggregate(Emissions ~ year, combustionNEI, sum)
+
+# BarPlot for coal combustion-related sources data for all US
+dev.cur()
+png('plot4.png')
+
+barplot((tol.combustionNEI$Emissions)/10^3
+        , names= tol.combustionNEI$year
+        , xlab = "Years", ylab = "PM2.5 Emissions (KiloTons)"
+        , main = paste("Total PM2.5 Emissions from Coal Combustion-Related Sources","\nin United States"))
+
+dev.off()
+
+```
+### Plot 4
+```{r plot4B, echo=FALSE}
+barplot((tol.combustionNEI$Emissions)/10^3
+        , names= tol.combustionNEI$year
+        , xlab = "Years", ylab = "PM2.5 Emissions (KiloTons)"
+        , main = paste("Total PM2.5 Emissions from Coal Combustion-Related Sources","\nin United States"))
+```
+
+### Analysis Statement for Q4
+The barplot above revert that, the total of PM~2.5~ Emissions from Coal Combustion-Related Sources in United State has dropped in year from year 1999 to 2002. and maintained at approximately 480 KiloTans in year 2002 to 2005. It then decrease to approximately 330 KiloTons  in year 2008.
+
+
+## Questions 5 
+How have emissions from motor vehicle sources changed from 1999–2008 in Baltimore City?
+##### Note: The type of source ON-ROAD is refer to motor vehicle sources
+
+```{r plot5A, include=FALSE}
+# Cont's from Q4
+# Reads data from the working directory
+# Extract only motor vehicle sources (type=ON-ROAD) data for Baltimore City, Maryland (fips == "24510")
+
+emissions.BaltimoreMotor <- subset(NEI,fips == "24510" & type == "ON-ROAD")
+tol.BaltimoreMotor <- aggregate(Emissions ~ year, emissions.BaltimoreMotor, sum)
+
+# LinePlot
+library(ggplot2)
+dev.cur()
+png('plot5.png')
+
+ggBaltimoreMotor <-ggplot(tol.BaltimoreMotor, aes(year, Emissions)) + 
+  geom_line(col = "steelblue3") +
+  geom_point(shape="diamond filled", size = 2, fill = "steelblue3") +
+  ggtitle(expression("Total PM"[2.5]* " Emissions from Motor Vehicle in Baltimore City by Year")) +
+  xlab("Year") +
+  ylab(expression("PM2.5 Emissions (Tons)"))
+
+print(ggBaltimoreMotor)
+dev.off()
+```
+### Plots 5
+```{r plot5B, echo=FALSE}
+library(ggplot2)
+ggBaltimoreMotor <-ggplot(tol.BaltimoreMotor, aes(year, Emissions)) + 
+  geom_line(col = "steelblue3") +
+  geom_point(shape="diamond filled", size = 2, fill = "steelblue3") +
+  ggtitle(expression("Total PM"[2.5]* " Emissions from Motor Vehicle in Baltimore City by Year")) +
+  xlab("Year") +
+  ylab(expression("PM2.5 Emissions (Tons)"))
+  print(ggBaltimoreMotor)
+```
+
+### Analysis Statement for Q5
+The line shown that the PM~2.5~ Emissions in Baltimore City from motor vehicle sources has dropped from 1999 to 2008.
+
+
+## Questions 6 
+Compare emissions from motor vehicle sources in Baltimore City with emissions from motor vehicle sources in Los Angeles County, California (fips == "06037"). Which city has seen greater changes over time in motor vehicle emissions?
+
+```{r plot6A, include=FALSE}
+# Cont's from Q5
+# Extra only motor vehicle sources (type=ON-ROAD) data for Baltimore City (fips == "24510") &  
+# Los Angeles County (fips == "06037")
+
+Baltimore_LosAngelesMotor <- subset(NEI, NEI$fips %in% c("24510","06037") & NEI$type == "ON-ROAD")
+tol.Baltimore_LosAngelesMotor <- aggregate(Emissions ~ year + fips, Baltimore_LosAngelesMotor, sum)
+
+library(ggplot2)
+dev.cur()
+png('plot6.png')
+
+ggBaltimoreMotor2<-ggplot(tol.Baltimore_LosAngelesMotor, aes(year, Emissions, col = fips)) +
+  geom_line() +
+  geom_point() +
+  ggtitle(expression("Baltimore & Los Angeles PM"*""[2.5]* " Emissions from Motor Vehicle by Year")) +  
+  labs(x = "Year", y = expression("PM"[2.5]*" Emission (Tons)")) +
+  scale_colour_discrete(name = "City", labels = c("Los Angeles", "Baltimore")) +
+  theme(legend.title = element_text(face = "bold"))
+
+print(ggBaltimoreMotor2)
+dev.off()
+```
+### Plot 6
+```{r plot6B, echo=FALSE}
+library(ggplot2)
+ggBaltimoreMotor2<-ggplot(tol.Baltimore_LosAngelesMotor, aes(year, Emissions, col = fips)) +
+  geom_line() +
+  geom_point() +
+  ggtitle(expression("Baltimore & Los Angeles PM"*""[2.5]* " Emissions from Motor Vehicle by Year")) +  
+  labs(x = "Year", y = expression("PM"[2.5]*" Emission (Tons)")) +
+  scale_colour_discrete(name = "City", labels = c("Los Angeles", "Baltimore")) +
+  theme(legend.title = element_text(face = "bold"))
+
+print(ggBaltimoreMotor2)
+```
+
+### Analysis Statement for Q6
+The PM~2.5~ Emissions from motor vehicle sources in Los Angeles County has seen the greatest changes over time.
+
+--
